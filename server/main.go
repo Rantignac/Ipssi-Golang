@@ -6,20 +6,29 @@ import (
 	"html/template"
 	"ipssi/handlers"
 	"net/http"
+	"strings"
 
 	"github.com/nanoninja/bulma"
 )
 
+var filters = map[string]interface{}{
+	"uppercase": strings.ToUpper,
+}
+
 func home(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.New("home").ParseFiles("./tmpl/home.html")
+	tmpl, err := template.New("home").Funcs(filters).ParseFiles("./tmpl/home.html")
 	if err != nil {
 		fmt.Println(err)
 	}
-	tmpl.Execute(w, map[string]string{
+	tmpl.Execute(w, map[string]interface{}{
 		"name":    "Gopher",
 		"version": "1.10",
 		"value":   "",
 	})
+
+	if err != nil {
+		fmt.Println(err)
+	}
 
 }
 
