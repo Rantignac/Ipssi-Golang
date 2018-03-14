@@ -1,55 +1,57 @@
 swagger: '2.0'
-
 info:
-  title: TodoList
-  version: '0.0.1'
-  description: 'Todo list api'
+  title:  TodoList
+  version:  '0.0.1'
+  description:  'Todo list api'
   contact:
-    email: 'vincent@nanoninja.com'
-
+    email: 'quentin.nicolas.tessier@gmail.com'
+    
 schemes:
   - https
 
 host: 'api.ipssi.com'
-basePath: '/todo'
+
+basePath:  '/todo'
 
 paths:
   /tasks:
     post:
-      description: Create a new task
       tags:
         - tasks
-      consumes:
+      description: Create a new task
+      consumes: 
         - application/json
-      produces:
+      produces: 
         - application/json
-      parameters:
+      parameters: 
         - name: body
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Task'
+            $ref: '#/definitions/Tasks'
       responses:
         201:
           description: Created
           schema:
-            $ref: '#/definitions/Task'
+            $ref: '#/definitions/Tasks'
         400:
-          description: Bad Request
+          description: bad request
           schema:
             $ref: '#/definitions/Error'
     put:
-      description: Update task by its ID.
+      description: Update task by id
       tags:
         - tasks
       consumes: 
         - application/json
-      parameters:
+      produces: 
+        - application/json
+      parameters: 
         - name: body
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Task'
+            $ref: '#/definitions/Tasks'
       responses:
         204:
           description: No Content
@@ -61,13 +63,14 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/Error'
+            
     get:
-      description: 'get all tasks'
+      description: 'Get All Tasks'
+      produces: 
+        - application/json
       tags:
         - tasks
-      produces:
-        - application/json
-      parameters:
+      parameters: 
         - name: offset
           in: query
           required: false
@@ -82,8 +85,8 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Task'
-
+              $ref: '#/definitions/Tasks'
+              
   '/tasks/{id}':
     get:
       description: 'Find a task by its id.'
@@ -99,24 +102,59 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Task'
-
+    delete:
+      description: Delete a task by its ID
+      parameters: 
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        204:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+            
+  '/tasks/status/{status}':
+    get:
+      description: Find all tasks by their status
+      tags: 
+        - tasks
+      parameters: 
+        - name: status
+          in: path
+          required: true
+          type: boolean
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Tasks'
+        default:
+          description: Unexpected Error
+          schema:
+            $ref: '#/definitions/Error'
+    
 definitions:
-  Task:
+  Tasks:
     type: object
     properties:
       id:
         type: string
-        description: Unique identifier representing a specific task for a given UUI.
+        description: Unique identifier representing a specific task for a given UUID
       title:
         type: string
-        description: Title reprenting the title of the task.
+        description: Title representing the title of the tasks
       created_at:
         type: string
         format: dateTime
-        description: Is the date when the task has been created.
+        description: Is the date when the task has been created
+        
       status:
         type: boolean
-        description: Task is done or not.
+        description: Task is done or not
   Error:
     type: object
     properties:
