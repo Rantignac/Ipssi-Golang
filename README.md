@@ -50,3 +50,7 @@ La même chose mais en ligne
 ```sh
 openssl req -new -x509 -sha256 -days 365 -subj "/C=FR/ST=IDF/L=Paris/O=ipssi/CN=localhost" -key ./server/ssl/server.key -out ./server/ssl/server.crt
 ```
+MongoDB container docker
+```sh
+docker run --name mongodb -p 27017:27017 -d mongo
+```
