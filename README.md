@@ -1,11 +1,10 @@
 # Go Bases
 
-apprentissage de Go
+Apprentissage de Go
 
 # Go API
 
-les fichiers du répertoire golang sont à placé dans
-le répertoire src.
+Création d'une api sous Go
 
 ## Installation des dépendances
 
