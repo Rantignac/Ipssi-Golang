@@ -1,8 +1,8 @@
 package controller
 
 import (
+	"api/handler"
 	"api/model"
-	"fmt"
 	"net/http"
 )
 
@@ -26,6 +26,7 @@ func NewDefault() *Default {
 	return c
 }
 
+// Index HomePage
 func (d *Default) index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello")
+	handler.SendJSONOK(w, "Hello")
 }
