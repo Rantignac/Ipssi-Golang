@@ -6,6 +6,7 @@ import (
 )
 
 // go test -v ./...
+//go test -v *.go
 func TestSayHello(t *testing.T) {
 	got := app.SayHello("John")
 	want := "Hello John"
