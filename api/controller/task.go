@@ -74,12 +74,12 @@ func (t *Task) All(w http.ResponseWriter, r *http.Request) {
 	offset := store.NoPaging
 	limit := store.NoPaging
 
-	offset, err = strconv.Atoi(handler.GetParams("offset", r))
+	offset, err = strconv.Atoi(r.URL.Query().Get("offset"))
 	if err != nil {
 		offset = store.NoPaging
 	}
 
-	limit, err = strconv.Atoi(handler.GetParams("limit", r))
+	limit, err = strconv.Atoi(r.URL.Query().Get("limit"))
 	if err != nil {
 		limit = store.NoPaging
 	}
