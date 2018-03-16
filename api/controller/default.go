@@ -26,7 +26,7 @@ func NewDefault() *Default {
 	return c
 }
 
-// Index HomePage
+// Index
 func (d *Default) index(w http.ResponseWriter, r *http.Request) {
 	handler.SendJSONOK(w, "Hello")
 }

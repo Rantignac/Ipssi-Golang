@@ -4,7 +4,9 @@ import (
 	"api/handler"
 	"api/model"
 	"api/store"
+	"log"
 	"net/http"
+	"strconv"
 )
 
 type Task struct {
@@ -29,11 +31,66 @@ func NewTask(s store.Manager) *Task {
 			Pattern: t.Prefix,
 			Func:    t.Create,
 		},
+		model.Route{
+			Name:    "All",
+			Method:  "GET",
+			Pattern: t.Prefix,
+			Func:    t.All,
+		},
+		model.Route{
+			Name:    "Find",
+			Method:  "GET",
+			Pattern: t.Prefix + "/{id}",
+			Func:    t.FindById,
+		},
+		model.Route{
+			Name:    "FindByStatus",
+			Method:  "GET",
+			Pattern: t.Prefix + "/status/{status:(?:true|false)}",
+			Func:    t.FindByStatus,
+		},
+		model.Route{
+			Name:    "Update",
+			Method:  "PUT",
+			Pattern: t.Prefix,
+			Func:    t.Update,
+		},
+		model.Route{
+			Name:    "Delete",
+			Method:  "DELETE",
+			Pattern: t.Prefix + "/{id}",
+			Func:    t.Delete,
+		},
 	}
 
 	t.Routes = append(t.Routes, routes...)
 
 	return t
+}
+
+func (t *Task) All(w http.ResponseWriter, r *http.Request) {
+	var err error
+
+	offset := store.NoPaging
+	limit := store.NoPaging
+
+	offset, err = strconv.Atoi(handler.GetParams("offset", r))
+	if err != nil {
+		offset = store.NoPaging
+	}
+
+	limit, err = strconv.Atoi(handler.GetParams("limit", r))
+	if err != nil {
+		limit = store.NoPaging
+	}
+
+	tasks, err := t.store.All(offset, limit)
+	if err != nil {
+		handler.SendJSONError(w, "Error All", http.StatusInternalServerError)
+		return
+	}
+
+	handler.SendJSONOK(w, &tasks)
 }
 
 func (t *Task) Create(w http.ResponseWriter, r *http.Request) {
@@ -52,4 +109,61 @@ func (t *Task) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	handler.SendJSONWithStatus(w, task, http.StatusCreated)
+}
+func (t *Task) FindById(w http.ResponseWriter, r *http.Request) {
+	id := handler.GetParams("id", r)
+
+	task, err := t.store.Find(id)
+	if err != nil {
+		log.Println(err)
+		handler.SendJSONError(w, "Error while retrieving task", http.StatusInternalServerError)
+		return
+	}
+	handler.SendJSONOK(w, task)
+
+}
+
+func (t *Task) Delete(w http.ResponseWriter, r *http.Request) {
+	id := handler.GetParams("id", r)
+	err := t.store.Delete(id)
+	if err != nil {
+		log.Println(err)
+		handler.SendJSONError(w, "Error while deleting task", http.StatusInternalServerError)
+		return
+	}
+	handler.SendJSONWithStatus(w, "", http.StatusNoContent)
+}
+
+func (t *Task) Update(w http.ResponseWriter, r *http.Request) {
+	task := &model.Task{}
+	err := handler.ParseJson(r, task)
+	if err != nil {
+		log.Println(err)
+		handler.SendJSONError(w, "", http.StatusBadRequest)
+		return
+
+	}
+	err = t.store.Update(task)
+	if err != nil {
+		log.Println(err)
+		handler.SendJSONError(w, "Error while updating task", http.StatusInternalServerError)
+		return
+	}
+
+}
+func (t *Task) FindByStatus(w http.ResponseWriter, r *http.Request) {
+	status, err := strconv.ParseBool(handler.GetParams("status", r))
+	if err != nil {
+		log.Println(err)
+		handler.SendJSONError(w, "", http.StatusBadRequest)
+		return
+	}
+	tasks, err := t.store.FindByStatus(status)
+	if err != nil {
+		log.Println(err)
+		handler.SendJSONError(w, "Error While retrieving task", http.StatusInternalServerError)
+		return
+	}
+	handler.SendJSONOK(w, tasks)
+
 }
