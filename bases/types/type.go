@@ -1,13 +1,10 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-//le typage
-
+// Le typage
 func main() {
-
 	b := 'a'
-	fmt.Println(b)
+	fmt.Println(b, string(97))
+
 }
